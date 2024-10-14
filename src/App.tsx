@@ -1,10 +1,12 @@
 import React from 'react';
 import './App.css';
+import UsersPage from "./components/UsersPage";
+import {data} from "./components/data";
 
 function App() {
   return (
     <div className="App">
-        <h1>GIGA Shop</h1>
+        <UsersPage data={data}/>
     </div>
   );
 }
