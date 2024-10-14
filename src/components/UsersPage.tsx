@@ -42,6 +42,8 @@ const getTextColorByRole = (role: string): React.CSSProperties => {
 
 const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 10;
 
     const handleRefresh = () => {
         setSearchTerm('');
@@ -62,6 +64,17 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
 
         return searchInValues.toLowerCase().includes(searchTerm.toLowerCase());
     });
+
+    // Pagination logic
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredData.slice(indexOfFirstUser, indexOfLastUser);
+
+    const totalPages = Math.ceil(filteredData.length / usersPerPage);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     return (
         <div className="container">
@@ -88,7 +101,7 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
                 </tr>
                 </thead>
                 <tbody>
-                {filteredData.map(user => (
+                {currentUsers.map(user => (
                     <tr key={user.id} className="row">
                         {columns.map(column => (
                             <td key={column.key} className="cell">
@@ -100,6 +113,17 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
                 ))}
                 </tbody>
             </table>
+            <div className="pagination">
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => handlePageChange(index + 1)}
+                        className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 };
