@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './UsersPage.css';
 
 type User = {
     id: number;
@@ -63,34 +64,34 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
     });
 
     return (
-        <div style={containerStyle}>
-            <div style={searchContainerStyle}>
-                <h1 style={titleStyle}>Users</h1>
-                <div style={searchInputWrapperStyle}>
-                    <span style={searchIconStyle}>&#128269;</span>
+        <div className="container">
+            <div className="search-container">
+                <h1 className="title">Users</h1>
+                <div className="search-input-wrapper">
+                    <span className="search-icon">&#128269;</span>
                     <input
                         type="text"
                         placeholder="Search by any field"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={searchInputStyle}
+                        className="search-input"
                     />
-                    <button onClick={handleRefresh} style={clearButtonStyle}>&#10006;</button>
+                    <button onClick={handleRefresh} className="clear-button">&#10006;</button>
                 </div>
             </div>
-            <table style={tableStyle}>
+            <table className="table">
                 <thead>
                 <tr>
                     {columns.map(column => (
-                        <th key={column.key} style={headerCellStyle}>{column.label}</th>
+                        <th key={column.key} className="header-cell">{column.label}</th>
                     ))}
                 </tr>
                 </thead>
                 <tbody>
                 {filteredData.map(user => (
-                    <tr key={user.id} style={rowStyle}>
+                    <tr key={user.id} className="row">
                         {columns.map(column => (
-                            <td key={column.key} style={cellStyle}>
+                            <td key={column.key} className="cell">
                                 {/*// @ts-ignore*/}
                                 {column.render ? column.render(user[column.key]) : user[column.key]}
                             </td>
@@ -101,89 +102,6 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
             </table>
         </div>
     );
-};
-
-const containerStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gap: '20px',
-    justifyContent: 'center',
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
-};
-
-const titleStyle: React.CSSProperties = {
-    textAlign: 'center',
-    color: '#333',
-    marginRight: '85%',
-};
-
-const searchContainerStyle: React.CSSProperties = {
-    display: 'grid',
-    gridTemplateColumns: '1fr auto',
-    alignItems: 'center',
-    gap: '10px',
-};
-
-const searchInputWrapperStyle: React.CSSProperties = {
-    position: 'relative',
-    display: 'grid',
-    gridTemplateColumns: 'auto 1fr auto',
-    alignItems: 'center',
-};
-
-const searchInputStyle: React.CSSProperties = {
-    padding: '10px 10px 10px 30px',
-    borderRadius: '4px',
-    border: '1px solid #ccc',
-};
-
-const searchIconStyle: React.CSSProperties = {
-    position: 'absolute',
-    left: '10px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    fontSize: '16px',
-    color: '#aaa',
-};
-
-const clearButtonStyle: React.CSSProperties = {
-    position: 'absolute',
-    right: '5%',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    border: 'none',
-    background: 'transparent',
-    cursor: 'pointer',
-    color: '#aaa',
-    fontSize: '16px',
-};
-
-const tableStyle: React.CSSProperties = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    margin: '20px 0',
-    fontSize: '18px',
-    textAlign: 'left',
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-};
-
-const headerCellStyle: React.CSSProperties = {
-    padding: '12px 15px',
-    border: '1px solid #ddd',
-    backgroundColor: '#f8f8f8',
-    fontWeight: 'bold',
-};
-
-const cellStyle: React.CSSProperties = {
-    padding: '12px 15px',
-    border: '1px solid #ddd',
-};
-
-const rowStyle: React.CSSProperties = {
-    backgroundColor: '#fff',
 };
 
 export default UserTable;
