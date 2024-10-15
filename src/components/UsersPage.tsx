@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect  } from 'react';
 import './UsersPage.css';
 
 type User = {
@@ -49,6 +49,11 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
         setSearchTerm('');
     };
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+
     const filteredData = data.filter(user => {
         const searchInValues = [
             user.name,
@@ -69,7 +74,6 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredData.slice(indexOfFirstUser, indexOfLastUser);
-
     const totalPages = Math.ceil(filteredData.length / usersPerPage);
 
     const handlePageChange = (page: number) => {
@@ -114,6 +118,13 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
                 </tbody>
             </table>
             <div className="pagination">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    className="page-button"
+                    disabled={currentPage === 1}
+                >
+                    &laquo;
+                </button>
                 {Array.from({ length: totalPages }, (_, index) => (
                     <button
                         key={index}
@@ -123,9 +134,16 @@ const UserTable: React.FC<{ data: User[] }> = ({ data }) => {
                         {index + 1}
                     </button>
                 ))}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    className="page-button"
+                    disabled={currentPage === totalPages}
+                >
+                    &raquo;
+                </button>
             </div>
         </div>
     );
 };
 
-export default UserTable;
+export default UserTable
