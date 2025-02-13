@@ -1,20 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import './UsersPage.css';
+import {User, Column} from './types'
+import UserDetails from "./UserDetails";
+import AddUserButton from './AddUserButton';
+import AddUserSidebar from './AddUserSidebar';
+import Pagination from './Pagination';
+import SearchBar from "./SearchBar";
+import UserTable from "./UserTable";
+import {data} from "./data";
 
-type User = {
-    id: number;
-    name: string;
-    email: string;
-    age: number;
-    isActive: boolean;
-    phone: string;
-    address: string;
-    registrationDate: Date;
-    lastLogin: Date;
-    role: string;
-};
-
-const columns = [
+const columns: Column[] = [
     {key: 'id', label: 'ID'},
     {key: 'name', label: 'Name'},
     {key: 'email', label: 'Email'},
@@ -27,8 +22,16 @@ const columns = [
         label: 'Registration Date',
         render: (value: Date) => new Date(value).toLocaleDateString()
     },
-    {key: 'lastLogin', label: 'Last Login', render: (value: Date) => new Date(value).toLocaleDateString()},
-    {key: 'role', label: 'Role', render: (role: string) => <span style={getTextColorByRole(role)}>{role}</span>},
+    {
+        key: 'lastLogin',
+        label: 'Last Login',
+        render: (value: Date) => new Date(value).toLocaleDateString()
+    },
+    {
+        key: 'role',
+        label: 'Role',
+        render: (role: string) => <span style={getTextColorByRole(role)}>{role}</span>
+    },
 ];
 
 const getTextColorByRole = (role: string): React.CSSProperties => {
@@ -44,15 +47,24 @@ const getTextColorByRole = (role: string): React.CSSProperties => {
     }
 };
 
-const UserTable: React.FC<{ data: User[] }> = ({data}) => {
+
+const UsersPage: React.FC = () => {
+    const [users, setUsers] = useState<User[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPageBeforeSearch, setLastPageBeforeSearch] = useState(1);
     const usersPerPage = 10;
+    const [isAddUserSidebarOpen, setIsAddUserSidebarOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-    const handleRefresh = () => {
-        setSearchTerm('');
-    };
+    const getUsersData = () => {
+        setUsers(data)
+    }
+
+    useEffect(() => {
+       getUsersData()
+    }, []);
+    
 
     useEffect(() => {
         if (searchTerm) {
@@ -64,7 +76,7 @@ const UserTable: React.FC<{ data: User[] }> = ({data}) => {
     }, [searchTerm]);
 
 
-    const filteredData = data.filter(user => {
+    const filteredData = users.filter(user => {
         const searchInValues = [
             user.name,
             user.email,
@@ -85,7 +97,7 @@ const UserTable: React.FC<{ data: User[] }> = ({data}) => {
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredData.slice(indexOfFirstUser, indexOfLastUser);
     const totalPages = Math.ceil(filteredData.length / usersPerPage);
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
@@ -98,6 +110,16 @@ const UserTable: React.FC<{ data: User[] }> = ({data}) => {
 
     const handleCloseSidebar = () => {
         setSelectedUser(null);
+        setIsAddUserSidebarOpen(false);
+    };
+
+    const handleAddUserClick = () => {
+        setIsAddUserSidebarOpen(true);
+    };
+
+
+    const handleSaveUser = (newUser: { name: string; email: string; age: string; phone: string; address: string }) => {
+        console.log(newUser);
     };
 
 
@@ -105,90 +127,31 @@ const UserTable: React.FC<{ data: User[] }> = ({data}) => {
         <div className="container">
             <div className="search-container">
                 <h1 className="title">Users</h1>
-                <div className="search-input-wrapper">
-                    <span className="search-icon">&#128269;</span>
-                    <input
-                        type="text"
-                        placeholder="Search by any field"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="search-input"
-                    />
-                    <button onClick={handleRefresh} className="clear-button">&#10006;</button>
-                </div>
+                <AddUserButton onClick={handleAddUserClick}/>
+                <SearchBar
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    onAddUserClick={handleAddUserClick}
+                />
             </div>
-            <table className="table">
-                <thead>
-                <tr>
-                    {columns.map(column => (
-                        <th key={column.key} className="header-cell">{column.label}</th>
-                    ))}
-                </tr>
-                </thead>
-                <tbody>
-                {currentUsers.map(user => (
-                    <tr key={user.id} className="row" onClick={() => handleUserClick(user)}>
-                        {columns.map(column => (
-                            <td key={column.key} className="cell">
-                                {/*// @ts-ignore*/}
-                                {column.render ? column.render(user[column.key]) : user[column.key]}
-                            </td>
-                        ))}
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-            <div className="pagination">
-                <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    className="page-button"
-                    disabled={currentPage === 1}
-                >
-                    &laquo;
-                </button>
-                {Array.from({length: totalPages}, (_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => handlePageChange(index + 1)}
-                        className={`page-button ${currentPage === index + 1 ? 'active' : ''}`}
-                    >
-                        {index + 1}
-                    </button>
-                ))}
-                <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    className="page-button"
-                    disabled={currentPage === totalPages}
-                >
-                    &raquo;
-                </button>
-
-            </div>
+            <UserTable
+                columns={columns}
+                currentUsers={currentUsers}
+                onUserClick={handleUserClick}
+            />
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
             {selectedUser && (
-                <div className="sidebar">
-                    <div className="sidebar-content">
-                        <div className="sidebar-header">
-                            <div className="sidebar-content-user">User Details</div>
-                            <button className="close-sidebar" onClick={handleCloseSidebar}>&times;</button>
-                        </div>
-                        <div className="sidebar-user-info">
-                            <p><strong>ID:</strong> {selectedUser.id}</p>
-                            <p><strong>Name:</strong> {selectedUser.name}</p>
-                            <p><strong>Email:</strong> {selectedUser.email}</p>
-                            <p><strong>Age:</strong> {selectedUser.age}</p>
-                            <p><strong>Active:</strong> {selectedUser.isActive ? 'Yes' : 'No'}</p>
-                            <p><strong>Phone:</strong> {selectedUser.phone}</p>
-                            <p><strong>Address:</strong> {selectedUser.address}</p>
-                            <p><strong>Registration Date:</strong> {selectedUser.registrationDate.toLocaleDateString()}</p>
-                            <p><strong>Last Login:</strong> {selectedUser.lastLogin.toLocaleDateString()}</p>
-                            <p><strong>Role:</strong> {selectedUser.role}</p>
-                        </div>
-                    </div>
-                </div>
+                <UserDetails selectedUser={selectedUser}
+                             handleCloseSidebar={handleCloseSidebar}
+                />
             )}
+            {isAddUserSidebarOpen && (<AddUserSidebar onClose={handleCloseSidebar} onSave={handleSaveUser}/>)}
         </div>
-
     );
 };
 
-export default UserTable
+export default UsersPage;

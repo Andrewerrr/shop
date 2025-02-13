@@ -1,12 +1,15 @@
 import React from 'react';
 import './App.css';
 import UsersPage from "./components/UsersPage";
-import {data} from "./components/data";
+
+
+
 
 function App() {
-  return (
+
+    return (
     <div className="App">
-        <UsersPage data={data}/>
+        <UsersPage/>
     </div>
   );
 }

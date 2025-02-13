@@ -1,0 +1,53 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 25%;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-content-user {
+    font-size: 24px;
+}
+
+.close-sidebar {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.sidebar-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 22px;
+}
+
+.sidebar-user-info input {
+    margin-bottom: 20px;
+    padding: 8px;
+    font-size: 16px;
+    box-shadow: -2px 0 5px rgb(39, 158, 239);
+}
+
+.save-button {
+    margin-bottom:20%;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
